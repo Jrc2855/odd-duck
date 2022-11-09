@@ -6,6 +6,7 @@ console.log('Testing 1,2');
 
 let voteCount = 25;
 let productArray = [];
+let randomProductArray = [];
 
 //-----------DOM-----------//
 
@@ -27,16 +28,17 @@ function randomIndex() {
 };
 
 function imageRender() {
-  let imgOneIndex = randomIndex();
-  let imgTwoIndex = randomIndex();
-  let imgThreeIndex = randomIndex();
+  while(randomProductArray.length < 6) {
+    let randomProducts = randomIndex();
+    if (!randomProductArray.includes(randomProducts)) {
+      randomProductArray.push(randomProducts);
+    }
+  }
 
-  if (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex) {
-    imgOneIndex = randomIndex();
-  }
-  if (imgTwoIndex === imgThreeIndex) {
-    imgTwoIndex = randomIndex();
-  }
+  let imgOneIndex = randomProductArray.shift();
+  let imgTwoIndex = randomProductArray.shift();
+  let imgThreeIndex = randomProductArray.shift();
+
   imgOne.src = productArray[imgOneIndex].imagePath;
   imgTwo.src = productArray[imgTwoIndex].imagePath;
   imgThree.src = productArray[imgThreeIndex].imagePath;
@@ -73,7 +75,7 @@ function handleShowResults(event) {
       data: {
         labels: productNames,
         datasets: [{
-          label: '# of votes',
+          label: '# of Views',
           data: productViews,
           backgroundColor: 'red',
           color: 'white',
@@ -108,6 +110,15 @@ function handleImageClick(event) {
   imageRender();
   if (voteCount === 0) {
     imageContainer.removeEventListener('click', handleImageClick);
+
+    //------------Local Storage------------//
+    // Step 1: Stringify the Data
+    let stringifiedProducts = JSON.stringify(productArray);
+
+    console.log('Stringified Products >>> ', stringifiedProducts);
+
+    // Step 2: Add to local storage
+    localStorage.setItem("myProducts", stringifiedProducts);
   }
 }
 
@@ -124,26 +135,40 @@ function Product(name, fileExtension = 'jpg') {
 
 //-----------Executable Code-----------//
 
-let bag = new Product('bag');
-let banana = new Product('banana');
-let bathroom = new Product('bathroom');
-let boots = new Product('boots');
-let breakfast = new Product('breakfast');
-let bubblegum = new Product('bubblegum');
-let chair = new Product('chair');
-let cthulhu = new Product('cthulhu');
-let dogduck = new Product('dog-duck');
-let dragon = new Product('dragon');
-let pen = new Product('pen');
-let petsweep = new Product('pet-sweep');
-let scissors = new Product('scissors');
-let shark = new Product('shark');
-let sweep = new Product('sweep', 'png');
-let tauntaun = new Product('tauntaun');
-let watercan = new Product('water-can');
-let wineglass = new Product('wine-glass');
+// More Local Storage Code
+// Step 3: Pull data out of local storage
+let retrievedProducts = localStorage.getItem('myProducts');
+console.log('retrieved Products >>>> ', retrievedProducts);
 
-productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogduck, dragon, pen, petsweep, scissors, shark, sweep, tauntaun, watercan, wineglass);
+// Step 4: Parse my data into code our App can use
+let parsedProducts = JSON.parse(retrievedProducts);
+console.log('parsed Products >>>> ', parsedProducts);
+
+if (parsedProducts) {
+  productArray = parsedProducts;
+} else {
+  let bag = new Product('bag');
+  let banana = new Product('banana');
+  let bathroom = new Product('bathroom');
+  let boots = new Product('boots');
+  let breakfast = new Product('breakfast');
+  let bubblegum = new Product('bubblegum');
+  let chair = new Product('chair');
+  let cthulhu = new Product('cthulhu');
+  let dogduck = new Product('dog-duck');
+  let dragon = new Product('dragon');
+  let pen = new Product('pen');
+  let petsweep = new Product('pet-sweep');
+  let scissors = new Product('scissors');
+  let shark = new Product('shark');
+  let sweep = new Product('sweep', 'png');
+  let tauntaun = new Product('tauntaun');
+  let watercan = new Product('water-can');
+  let wineglass = new Product('wine-glass');
+  
+  productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogduck, dragon, pen, petsweep, scissors, shark, sweep, tauntaun, watercan, wineglass);
+}
+
 
 imageRender();
 
